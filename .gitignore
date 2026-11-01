@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# System / OS files
+.DS_Store
+Thumbs.db
+
+# Vercel deployment cache
+.vercel/
+
+# Heavy raw Excel files (optional: comment out if you want to push Excel files to GitHub)
+# *.xlsx

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTP Push Task EMG Analysis Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .glass-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+      border-radius: 1rem;
+      transition: all 0.2s ease-in-out;
+    }
+    .glass-card:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    }
+
+    .tab-active {
+      background-color: #2563EB !important;
+      color: #FFFFFF !important;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .sub-tab-active {
+      border-color: #2563EB !important;
+      color: #2563EB !important;
+      background-color: #EFF6FF !important;
+      font-weight: 600;
+    }
+
+    .badge-biceps {
+      background-color: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+
+    .badge-triceps {
+      background-color: #FEF2F2;
+      color: #B91C1C;
+      border: 1px solid #FECACA;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo / Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+            <i data-lucide="activity" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-lg font-bold text-slate-900 tracking-tight">MTP Push Task EMG Portal</h1>
+              <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">v2.0</span>
+            </div>
+            <p class="text-xs text-slate-500">Isometric Load Scaling & Neuromuscular Fatigue Analysis</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex items-center space-x-1 sm:space-x-2">
+          <button onclick="switchView('dashboard')" id="nav-dashboard" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center space-x-1.5 transition">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Overview</span>
+          </button>
+          <button onclick="switchView('load-explorer')" id="nav-load-explorer" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center space-x-1.5 transition">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Loads & Muscles</span>
+          </button>
+          <button onclick="switchView('comparison-studio')" id="nav-comparison-studio" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center space-x-1.5 transition">
+            <i data-lucide="git-compare" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Compare Studio</span>
+          </button>
+          <button onclick="switchView('data-table')" id="nav-data-table" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 flex items-center space-x-1.5 transition">
+            <i data-lucide="table" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Dataset</span>
+          </button>
+          <button onclick="switchView('upload-modal')" id="nav-upload-modal" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 flex items-center space-x-1.5 transition shadow-sm">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+            <span>Upload Trial</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: DASHBOARD OVERVIEW                 -->
+    <!-- ========================================== -->
+    <section id="view-dashboard" class="space-y-6">
+      <!-- Welcome Hero Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 text-white p-6 sm:p-8 shadow-xl">
+        <div class="relative z-10 max-w-3xl space-y-2">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-medium border border-blue-400/30">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Master's Thesis Research Project
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            Sustained Push Task Neuromuscular Analysis
+          </h2>
+          <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+            Multi-subject Electromyography (EMG) investigation of <strong>Biceps Brachii</strong> and <strong>Triceps Brachii</strong> activation, recruitment scaling, and fatigue progression across incremental push load conditions (2.5kg, 5kg, 7.5kg, and 10kg).
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-300">
+            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4 text-blue-400"></i> 180s Trial Duration</span>
+            <span class="flex items-center gap-1"><i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i> 2000 Hz Sampling Rate</span>
+            <span class="flex items-center gap-1"><i data-lucide="box" class="w-4 h-4 text-amber-400"></i> 36 × 5s Non-overlapping Windows</span>
+          </div>
+        </div>
+        <!-- Decorative SVG glow in background -->
+        <div class="absolute -right-12 -bottom-16 w-80 h-80 rounded-full bg-blue-500/20 blur-3xl pointer-events-none"></div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Metric 1: Total Loads -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Load Conditions</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <i data-lucide="weight" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-slate-900" id="stat-total-loads">4</span>
+            <span class="text-xs font-medium text-slate-500">2.5kg to 10kg</span>
+          </div>
+          <p class="mt-1 text-xs text-slate-400">Incremental resistance levels</p>
+        </div>
+
+        <!-- Metric 2: Subjects Tested -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Subjects Tested</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <i data-lucide="users" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-slate-900" id="stat-total-subjects">6</span>
+            <span class="text-xs font-medium text-slate-500">Participants</span>
+          </div>
+          <p class="mt-1 text-xs text-slate-400">Balk, Gau, Mil, Muk, Priy, Swr</p>
+        </div>
+
+        <!-- Metric 3: Total Recorded Trials -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Recorded Trials</span>
+            <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-slate-900" id="stat-total-trials">13</span>
+            <span class="text-xs font-medium text-slate-500">Trial Files</span>
+          </div>
+          <p class="mt-1 text-xs text-slate-400">4,680,000 raw samples processed</p>
+        </div>
+
+        <!-- Metric 4: Primary Extensor (Triceps) Dominance -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Target Muscles</span>
+            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <i data-lucide="biceps" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-slate-900">2 Channels</span>
+            <span class="text-xs font-medium text-rose-600">Push Task</span>
+          </div>
+          <p class="mt-1 text-xs text-slate-400">Triceps (Agonist) + Biceps (Antagonist)</p>
+        </div>
+      </div>
+
+      <!-- Quick Exploration Cards for Each Load Condition -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-base font-bold text-slate-800">Load Conditions Overview</h3>
+          <span class="text-xs text-slate-500">Select any load condition to view analysis</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="load-cards-container">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Overview Charts Grid: Mean Activation Across Loads -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Chart 1: Muscle Activation Scaling with Load -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900">Muscular Activation (RMS) Scaling</h4>
+              <p class="text-xs text-slate-500">Average RMS activity vs External Load (2.5kg to 10kg)</p>
+            </div>
+            <span class="px-2 py-0.5 text-xs bg-slate-100 rounded text-slate-600 font-mono">RMS (ADC)</span>
+          </div>
+          <div class="h-64">
+            <canvas id="overviewLoadRmsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Median Frequency (MDF) Fatigue Scaling -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900">Fatigue Spectral Shift (Mean MDF)</h4>
+              <p class="text-xs text-slate-500">Frequency shift across loads indicating neuromuscular fatigue</p>
+            </div>
+            <span class="px-2 py-0.5 text-xs bg-slate-100 rounded text-slate-600 font-mono">MDF (Hz)</span>
+          </div>
+          <div class="h-64">
+            <canvas id="overviewLoadMdfChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio-Mechanic Guide & Context -->
+      <div class="glass-card p-6 bg-gradient-to-br from-white to-slate-50 border-slate-200">
+        <h4 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <i data-lucide="book-open" class="w-4 h-4 text-blue-600"></i>
+          How to Interpret EMG Push Task Metrics
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-600">
+          <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-100">
+            <div class="font-bold text-blue-900 text-sm mb-1 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
+              RMS (Muscular Activity)
+            </div>
+            <p class="leading-relaxed">
+              Root Mean Square reflects the electrical amplitude and motor unit recruitment intensity of the muscle fibers. Higher values signify greater neuromuscular effort. In push tasks, Triceps Brachii typically exhibits substantial recruitment.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-100">
+            <div class="font-bold text-amber-900 text-sm mb-1 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+              MDF (Median Frequency & Fatigue)
+            </div>
+            <p class="leading-relaxed">
+              Calculated via Fast Fourier Transform (FFT) Power Spectral Density (10–500 Hz). A continuous downward shift (negative slope) in MDF over the 180-second trial is the gold standard indicator of localized muscle fatigue.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-purple-50/60 border border-purple-100">
+            <div class="font-bold text-purple-900 text-sm mb-1 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span>
+              Co-Contraction Ratio (Triceps/Biceps)
+            </div>
+            <p class="leading-relaxed">
+              Ratio of agonist (Triceps) to antagonist/stabilizer (Biceps) activity. Reflects joint stiffness, biomechanical coordination, and push efficiency under varied isometric resistance.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: LOADS & MUSCLES EXPLORER          -->
+    <!-- ========================================== -->
+    <section id="view-load-explorer" class="space-y-6 hidden">
+      <!-- Control Panel: Select Load, Muscle, and Metric -->
+      <div class="glass-card p-5 space-y-4">
+        <!-- Load Condition Buttons -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">1. Select Load Condition</label>
+          <div class="flex flex-wrap gap-2" id="load-tab-buttons">
+            <button onclick="selectExplorerLoad('2.5kg')" class="explorer-load-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition" data-load="2.5kg">2.5 kg Push</button>
+            <button onclick="selectExplorerLoad('5kg')" class="explorer-load-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition" data-load="5kg">5.0 kg Push</button>
+            <button onclick="selectExplorerLoad('7.5kg')" class="explorer-load-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition" data-load="7.5kg">7.5 kg Push</button>
+            <button onclick="selectExplorerLoad('10kg')" class="explorer-load-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition" data-load="10kg">10.0 kg Push</button>
+            <button onclick="selectExplorerLoad('all')" class="explorer-load-btn px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition" data-load="all">All Loads Combined</button>
+          </div>
+        </div>
+
+        <!-- Filter Sub-Controls: Muscle & Metric -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+          <!-- Muscle Toggle -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">2. Muscle Channel</label>
+            <div class="inline-flex p-1 bg-slate-100 rounded-xl space-x-1 w-full sm:w-auto">
+              <button onclick="selectExplorerMuscle('biceps')" id="btn-muscle-biceps" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+                Biceps Brachii
+              </button>
+              <button onclick="selectExplorerMuscle('triceps')" id="btn-muscle-triceps" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+                Triceps Brachii
+              </button>
+              <button onclick="selectExplorerMuscle('both')" id="btn-muscle-both" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+                Both Muscles
+              </button>
+            </div>
+          </div>
+
+          <!-- Metric Toggle -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">3. Primary Analysis Metric</label>
+            <div class="inline-flex p-1 bg-slate-100 rounded-xl space-x-1 w-full sm:w-auto">
+              <button onclick="selectExplorerMetric('rms')" id="btn-metric-rms" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+                Muscular Activity (RMS)
+              </button>
+              <button onclick="selectExplorerMetric('mdf')" id="btn-metric-mdf" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+                Median Frequency (MDF Fatigue)
+              </button>
+              <button onclick="selectExplorerMetric('total_bar')" id="btn-metric-total-bar" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+                Total RMS Bar Chart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Interactive Chart Display -->
+      <div class="glass-card p-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-bold text-slate-900" id="explorerChartTitle">Load Analysis Chart</h3>
+              <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-700" id="explorerChartBadge">Interactive</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5" id="explorerChartSubtitle">36 windows of 5 seconds (0 - 180 seconds)</p>
+          </div>
+          <!-- Subject Visibility Toggles -->
+          <div class="flex flex-wrap items-center gap-1.5" id="chartSubjectToggles">
+            <!-- Dynamic pills to toggle individual subject visibility -->
+          </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="h-80 sm:h-96 mt-4 relative">
+          <canvas id="explorerInteractiveChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Publication Figures View (High-Res Matplotlib generated figures) -->
+      <div class="glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
+              Publication-Ready Matplotlib Plots
+            </h3>
+            <p class="text-xs text-slate-500">Official figures generated by the EMG analysis pipeline for research papers and thesis</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="togglePlotType('all')" id="btn-plot-all" class="sub-tab-active px-3 py-1 rounded-lg text-xs border border-slate-200">All 3 Plots</button>
+            <button onclick="togglePlotType('bar')" id="btn-plot-bar" class="px-3 py-1 rounded-lg text-xs border border-slate-200 text-slate-600 hover:bg-slate-50">RMS Bar</button>
+            <button onclick="togglePlotType('time_rms')" id="btn-plot-time-rms" class="px-3 py-1 rounded-lg text-xs border border-slate-200 text-slate-600 hover:bg-slate-50">Time-RMS</button>
+            <button onclick="togglePlotType('time_mdf')" id="btn-plot-time-mdf" class="px-3 py-1 rounded-lg text-xs border border-slate-200 text-slate-600 hover:bg-slate-50">Time-MDF</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4" id="publicationPlotsContainer">
+          <!-- Dynamic publication images -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: COMPARISON STUDIO                  -->
+    <!-- ========================================== -->
+    <section id="view-comparison-studio" class="space-y-6 hidden">
+      <!-- Compare Selector Bar -->
+      <div class="glass-card p-5">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="git-compare" class="w-4 h-4 text-blue-600"></i>
+              Comparative Neuromuscular Studio
+            </h3>
+            <p class="text-xs text-slate-500">Benchmark subjects across different loads, or analyze single-subject load adaptation</p>
+          </div>
+          <!-- Mode Toggle -->
+          <div class="inline-flex p-1 bg-slate-100 rounded-xl space-x-1">
+            <button onclick="setCompareMode('subject-across-loads')" id="btn-cmp-sub-load" class="sub-tab-active px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              Subject Across Loads
+            </button>
+            <button onclick="setCompareMode('subjects-at-load')" id="btn-cmp-subs-load" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 transition hover:text-slate-900">
+              Multiple Subjects at 1 Load
+            </button>
+            <button onclick="setCompareMode('muscle-head-to-head')" id="btn-cmp-muscles" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 transition hover:text-slate-900">
+              Biceps vs Triceps Co-Activation
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Parameters Row based on Mode -->
+        <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4" id="compareControls">
+          <!-- Controls will be populated by JS -->
+        </div>
+      </div>
+
+      <!-- Compare Results Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Compare Chart 1 -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900" id="cmpChart1Title">Muscular Activity (RMS) Comparison</h4>
+              <p class="text-xs text-slate-500" id="cmpChart1Sub">Windowed RMS curves</p>
+            </div>
+            <span class="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 font-mono rounded">RMS</span>
+          </div>
+          <div class="h-72">
+            <canvas id="cmpChart1"></canvas>
+          </div>
+        </div>
+
+        <!-- Compare Chart 2 -->
+        <div class="glass-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900" id="cmpChart2Title">Median Frequency (MDF Fatigue) Comparison</h4>
+              <p class="text-xs text-slate-500" id="cmpChart2Sub">Fatigue rate and spectral decay</p>
+            </div>
+            <span class="px-2 py-0.5 text-xs bg-amber-50 text-amber-700 font-mono rounded">MDF (Hz)</span>
+          </div>
+          <div class="h-72">
+            <canvas id="cmpChart2"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Scaling Insight Card (Linear Growth Rate per kg) -->
+      <div class="glass-card p-5" id="cmpScalingSummaryCard">
+        <h4 class="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+          <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
+          Recruitment & Fatigue Regression Insights
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">Subject</th>
+                <th class="py-2.5 px-3">Loads Tested</th>
+                <th class="py-2.5 px-3">Triceps RMS Scaling (Slope/kg)</th>
+                <th class="py-2.5 px-3">Biceps RMS Scaling (Slope/kg)</th>
+                <th class="py-2.5 px-3">Triceps Fatigue Drop</th>
+                <th class="py-2.5 px-3">Fatigue Vulnerability</th>
+              </tr>
+            </thead>
+            <tbody id="scalingSummaryBody" class="divide-y divide-slate-100">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: DATASET TABLE                      -->
+    <!-- ========================================== -->
+    <section id="view-data-table" class="space-y-6 hidden">
+      <div class="glass-card p-5 space-y-4">
+        <!-- Search and Filter Bar -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-2 w-full sm:w-auto">
+            <div class="relative w-full sm:w-64">
+              <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+              <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="Search subject or load..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <select id="tableLoadFilter" onchange="filterTable()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="all">All Loads</option>
+              <option value="2.5kg">2.5 kg</option>
+              <option value="5kg">5.0 kg</option>
+              <option value="7.5kg">7.5 kg</option>
+              <option value="10kg">10.0 kg</option>
+            </select>
+          </div>
+
+          <div class="flex items-center space-x-2 self-end sm:self-auto">
+            <button onclick="downloadCSV()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center space-x-1.5 transition">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export CSV</span>
+            </button>
+            <button onclick="downloadJSON()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center space-x-1.5 transition">
+              <i data-lucide="code" class="w-3.5 h-3.5"></i>
+              <span>Export JSON</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-3">Load</th>
+                <th class="py-3 px-3">Subject</th>
+                <th class="py-3 px-3">Biceps RMS (Total)</th>
+                <th class="py-3 px-3">Triceps RMS (Total)</th>
+                <th class="py-3 px-3">Biceps MDF Mean</th>
+                <th class="py-3 px-3">Triceps MDF Mean</th>
+                <th class="py-3 px-3">Biceps Fatigue Drop</th>
+                <th class="py-3 px-3">Triceps Fatigue Drop</th>
+                <th class="py-3 px-3">Triceps/Biceps Ratio</th>
+                <th class="py-3 px-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="datasetTableBody" class="divide-y divide-slate-100 bg-white">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 5: UPLOAD TRIAL MODAL / TAB           -->
+    <!-- ========================================== -->
+    <section id="view-upload-modal" class="space-y-6 hidden">
+      <div class="max-w-2xl mx-auto glass-card p-6 sm:p-8 space-y-6">
+        <div class="text-center space-y-1">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-inner">
+            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900">Upload New EMG Trial File</h3>
+          <p class="text-xs text-slate-500">Upload a 2-channel Excel (.xlsx) or CSV file for automated processing & immediate visualization</p>
+        </div>
+
+        <form id="uploadTrialForm" onsubmit="handleTrialUpload(event)" class="space-y-5">
+          <!-- Load Selection -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Load Condition</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                <input type="radio" name="uploadLoad" value="2.5kg" class="text-blue-600" checked>
+                <span class="text-xs font-semibold">2.5 kg</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                <input type="radio" name="uploadLoad" value="5kg" class="text-blue-600">
+                <span class="text-xs font-semibold">5.0 kg</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                <input type="radio" name="uploadLoad" value="7.5kg" class="text-blue-600">
+                <span class="text-xs font-semibold">7.5 kg</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                <input type="radio" name="uploadLoad" value="10kg" class="text-blue-600">
+                <span class="text-xs font-semibold">10.0 kg</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Subject Selection / Input -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Subject Identifier</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <select id="uploadSubjectSelect" onchange="toggleCustomSubject(this.value)" class="text-xs py-2.5 px-3 rounded-xl border border-slate-200 bg-white">
+                <option value="gau">Gaurav (gau)</option>
+                <option value="balk">Balkaran (balk)</option>
+                <option value="mil">Milan (mil)</option>
+                <option value="muk">Mukesh (muk)</option>
+                <option value="priy">Priyanshu (priy)</option>
+                <option value="swr">Swaraj (swr)</option>
+                <option value="__new__">+ Enter New Subject</option>
+              </select>
+              <input type="text" id="uploadSubjectCustom" placeholder="e.g. john" class="hidden text-xs py-2.5 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">EMG Data File (.xlsx / .csv)</label>
+            <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-blue-500 transition cursor-pointer bg-slate-50/50" onclick="document.getElementById('uploadFileInput').click()">
+              <input type="file" id="uploadFileInput" accept=".xlsx,.csv" class="hidden" onchange="updateSelectedFileName(this)">
+              <i data-lucide="file-up" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+              <p class="text-xs font-semibold text-slate-700" id="uploadFileNameLabel">Click to select trial file or drag & drop</p>
+              <p class="text-[11px] text-slate-400 mt-1">Col 1: Biceps Brachii, Col 2: Triceps Brachii (Row 5+)</p>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2">
+            <button type="submit" id="uploadSubmitBtn" class="w-full py-3 px-4 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition flex items-center justify-center space-x-2 shadow-md shadow-blue-500/20">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span>Process & Update Dashboard</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Status message -->
+        <div id="uploadStatusMsg" class="hidden p-4 rounded-xl text-xs font-medium"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- HIGH-RES IMAGE PREVIEW MODAL -->
+  <div id="imageModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="relative max-w-5xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200">
+        <div>
+          <h4 class="text-sm font-bold text-slate-900" id="modalImageTitle">Publication Plot Preview</h4>
+          <p class="text-xs text-slate-500">High-resolution figure (200 DPI)</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <a id="modalImageDownload" href="#" download class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 flex items-center space-x-1">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Download PNG</span>
+          </a>
+          <button onclick="closeImageModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-4 bg-slate-50 flex items-center justify-center max-h-[75vh] overflow-auto">
+        <img id="modalImageSrc" src="" alt="Plot Preview" class="max-h-[70vh] object-contain rounded-lg shadow-sm border border-slate-200">
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <p>Master's Thesis Project (MTP) &mdash; Push Task EMG Analysis & Visualization System</p>
+    <p class="text-[11px] text-slate-400 mt-1">Isometric 180s Trial Protocol &bull; Fast XML Stream Processing &bull; FFT Power Spectral Density</p>
+  </footer>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script src="/data/embedded_data.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
