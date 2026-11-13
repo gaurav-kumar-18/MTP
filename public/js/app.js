@@ -26,12 +26,14 @@ let cmpChart2Instance = null;
 
 // Distinct Subject Color Palette
 const SUBJECT_COLORS = {
-  balk: '#D97706',  // Amber
-  gau:  '#2563EB',  // Royal Blue
-  mil:  '#059669',  // Emerald Green
-  muk:  '#7C3AED',  // Purple
-  priy: '#DB2777',  // Pink
-  swr:  '#0891B2'   // Cyan
+  balk:   '#D97706',  // Amber
+  gau:    '#2563EB',  // Royal Blue
+  mil:    '#059669',  // Emerald Green
+  muk:    '#7C3AED',  // Purple
+  priy:   '#DB2777',  // Pink
+  ritesh: '#EA580C',  // Orange
+  swr:    '#0891B2',  // Cyan
+  tapas:  '#0D9488'   // Teal
 };
 
 const MUSCLE_COLORS = {

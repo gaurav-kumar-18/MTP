@@ -33,7 +33,9 @@ SUBJECT_FULLNAMES = {
     "mil": "Milan",
     "muk": "Mukesh",
     "priy": "Priyanshu",
-    "swr": "Swaraj"
+    "ritesh": "Ritesh",
+    "swr": "Swaraj",
+    "tapas": "Tapas"
 }
 
 def read_xlsx_two_cols(filepath, skip_rows=4, max_rows=None):

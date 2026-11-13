@@ -26,3 +26,4 @@ def health():
 
 # Export app for Vercel
 app_handler = app
+
