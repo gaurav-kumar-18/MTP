@@ -119,6 +119,7 @@
           "display_name": "Balkaran",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/balk.mp4",
           "total_biceps_rms": 14.4,
           "total_triceps_rms": 55.5,
           "triceps_biceps_ratio": 3.85,
@@ -300,6 +301,7 @@
           "display_name": "Gaurav",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/gau.mp4",
           "total_biceps_rms": 34.98,
           "total_triceps_rms": 60.88,
           "triceps_biceps_ratio": 1.74,
@@ -481,6 +483,7 @@
           "display_name": "Milan",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/mil.mp4",
           "total_biceps_rms": 9.31,
           "total_triceps_rms": 41.48,
           "triceps_biceps_ratio": 4.45,
@@ -662,6 +665,7 @@
           "display_name": "Mukesh",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/muk.mp4",
           "total_biceps_rms": 12.32,
           "total_triceps_rms": 48.28,
           "triceps_biceps_ratio": 3.92,
@@ -843,6 +847,7 @@
           "display_name": "Ritesh",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/ritesh.mp4",
           "total_biceps_rms": 16.33,
           "total_triceps_rms": 47.03,
           "triceps_biceps_ratio": 2.88,
@@ -1024,6 +1029,7 @@
           "display_name": "Tapas",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/tapas.mp4",
           "total_biceps_rms": 14.59,
           "total_triceps_rms": 42.52,
           "triceps_biceps_ratio": 2.91,
@@ -1224,6 +1230,7 @@
           "display_name": "Balkaran",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/balk.mp4",
           "total_biceps_rms": 22.07,
           "total_triceps_rms": 24.35,
           "triceps_biceps_ratio": 1.1,
@@ -1405,6 +1412,7 @@
           "display_name": "Gaurav",
           "load_id": "5kg",
           "file_name": "trail1.xlsx",
+          "simulation_video": "/simulations/5kg/gau.mp4",
           "total_biceps_rms": 17.8,
           "total_triceps_rms": 49.07,
           "triceps_biceps_ratio": 2.76,
@@ -1586,6 +1594,7 @@
           "display_name": "Priyanshu",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/priy.mp4",
           "total_biceps_rms": 19.76,
           "total_triceps_rms": 31.41,
           "triceps_biceps_ratio": 1.59,
@@ -1767,6 +1776,7 @@
           "display_name": "Ritesh",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/ritesh.mp4",
           "total_biceps_rms": 18.13,
           "total_triceps_rms": 52.06,
           "triceps_biceps_ratio": 2.87,
@@ -1948,6 +1958,7 @@
           "display_name": "Tapas",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/tapas.mp4",
           "total_biceps_rms": 15.88,
           "total_triceps_rms": 48.03,
           "triceps_biceps_ratio": 3.02,
@@ -2148,6 +2159,7 @@
           "display_name": "Gaurav",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/gau.mp4",
           "total_biceps_rms": 12.98,
           "total_triceps_rms": 57.39,
           "triceps_biceps_ratio": 4.42,
@@ -2329,6 +2341,7 @@
           "display_name": "Milan",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/mil.mp4",
           "total_biceps_rms": 10.46,
           "total_triceps_rms": 27.74,
           "triceps_biceps_ratio": 2.65,
@@ -2510,6 +2523,7 @@
           "display_name": "Ritesh",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/ritesh.mp4",
           "total_biceps_rms": 17.23,
           "total_triceps_rms": 58.53,
           "triceps_biceps_ratio": 3.4,
@@ -2691,6 +2705,7 @@
           "display_name": "Swaraj",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/swr.mp4",
           "total_biceps_rms": 13.43,
           "total_triceps_rms": 78.54,
           "triceps_biceps_ratio": 5.85,
@@ -2872,6 +2887,7 @@
           "display_name": "Tapas",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/tapas.mp4",
           "total_biceps_rms": 15.45,
           "total_triceps_rms": 54.04,
           "triceps_biceps_ratio": 3.5,
@@ -3072,6 +3088,7 @@
           "display_name": "Gaurav",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/gau.mp4",
           "total_biceps_rms": 12.96,
           "total_triceps_rms": 36.34,
           "triceps_biceps_ratio": 2.8,
@@ -3253,6 +3270,7 @@
           "display_name": "Milan",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/mil.mp4",
           "total_biceps_rms": 9.92,
           "total_triceps_rms": 23.2,
           "triceps_biceps_ratio": 2.34,
@@ -3434,6 +3452,7 @@
           "display_name": "Ritesh",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/ritesh.mp4",
           "total_biceps_rms": 19.06,
           "total_triceps_rms": 65.04,
           "triceps_biceps_ratio": 3.41,
@@ -3615,6 +3634,7 @@
           "display_name": "Swaraj",
           "load_id": "10kg",
           "file_name": "trail1.xlsx",
+          "simulation_video": "/simulations/10kg/swr.mp4",
           "total_biceps_rms": 11.83,
           "total_triceps_rms": 38.78,
           "triceps_biceps_ratio": 3.28,
@@ -3796,6 +3816,7 @@
           "display_name": "Tapas",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/tapas.mp4",
           "total_biceps_rms": 16.78,
           "total_triceps_rms": 60.04,
           "triceps_biceps_ratio": 3.58,
@@ -3996,6 +4017,7 @@
           "display_name": "Balkaran",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/balk.mp4",
           "total_biceps_rms": 14.4,
           "total_triceps_rms": 55.5,
           "triceps_biceps_ratio": 3.85,
@@ -4177,6 +4199,7 @@
           "display_name": "Balkaran",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/balk.mp4",
           "total_biceps_rms": 22.07,
           "total_triceps_rms": 24.35,
           "triceps_biceps_ratio": 1.1,
@@ -4370,6 +4393,7 @@
           "display_name": "Gaurav",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/gau.mp4",
           "total_biceps_rms": 34.98,
           "total_triceps_rms": 60.88,
           "triceps_biceps_ratio": 1.74,
@@ -4551,6 +4575,7 @@
           "display_name": "Gaurav",
           "load_id": "5kg",
           "file_name": "trail1.xlsx",
+          "simulation_video": "/simulations/5kg/gau.mp4",
           "total_biceps_rms": 17.8,
           "total_triceps_rms": 49.07,
           "triceps_biceps_ratio": 2.76,
@@ -4732,6 +4757,7 @@
           "display_name": "Gaurav",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/gau.mp4",
           "total_biceps_rms": 12.98,
           "total_triceps_rms": 57.39,
           "triceps_biceps_ratio": 4.42,
@@ -4913,6 +4939,7 @@
           "display_name": "Gaurav",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/gau.mp4",
           "total_biceps_rms": 12.96,
           "total_triceps_rms": 36.34,
           "triceps_biceps_ratio": 2.8,
@@ -5105,6 +5132,7 @@
           "display_name": "Milan",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/mil.mp4",
           "total_biceps_rms": 9.31,
           "total_triceps_rms": 41.48,
           "triceps_biceps_ratio": 4.45,
@@ -5286,6 +5314,7 @@
           "display_name": "Milan",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/mil.mp4",
           "total_biceps_rms": 10.46,
           "total_triceps_rms": 27.74,
           "triceps_biceps_ratio": 2.65,
@@ -5467,6 +5496,7 @@
           "display_name": "Milan",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/mil.mp4",
           "total_biceps_rms": 9.92,
           "total_triceps_rms": 23.2,
           "triceps_biceps_ratio": 2.34,
@@ -5657,6 +5687,7 @@
           "display_name": "Mukesh",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/muk.mp4",
           "total_biceps_rms": 12.32,
           "total_triceps_rms": 48.28,
           "triceps_biceps_ratio": 3.92,
@@ -5847,6 +5878,7 @@
           "display_name": "Priyanshu",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/priy.mp4",
           "total_biceps_rms": 19.76,
           "total_triceps_rms": 31.41,
           "triceps_biceps_ratio": 1.59,
@@ -6040,6 +6072,7 @@
           "display_name": "Ritesh",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/ritesh.mp4",
           "total_biceps_rms": 16.33,
           "total_triceps_rms": 47.03,
           "triceps_biceps_ratio": 2.88,
@@ -6221,6 +6254,7 @@
           "display_name": "Ritesh",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/ritesh.mp4",
           "total_biceps_rms": 18.13,
           "total_triceps_rms": 52.06,
           "triceps_biceps_ratio": 2.87,
@@ -6402,6 +6436,7 @@
           "display_name": "Ritesh",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/ritesh.mp4",
           "total_biceps_rms": 17.23,
           "total_triceps_rms": 58.53,
           "triceps_biceps_ratio": 3.4,
@@ -6583,6 +6618,7 @@
           "display_name": "Ritesh",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/ritesh.mp4",
           "total_biceps_rms": 19.06,
           "total_triceps_rms": 65.04,
           "triceps_biceps_ratio": 3.41,
@@ -6774,6 +6810,7 @@
           "display_name": "Swaraj",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/swr.mp4",
           "total_biceps_rms": 13.43,
           "total_triceps_rms": 78.54,
           "triceps_biceps_ratio": 5.85,
@@ -6955,6 +6992,7 @@
           "display_name": "Swaraj",
           "load_id": "10kg",
           "file_name": "trail1.xlsx",
+          "simulation_video": "/simulations/10kg/swr.mp4",
           "total_biceps_rms": 11.83,
           "total_triceps_rms": 38.78,
           "triceps_biceps_ratio": 3.28,
@@ -7148,6 +7186,7 @@
           "display_name": "Tapas",
           "load_id": "2.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/2.5kg/tapas.mp4",
           "total_biceps_rms": 14.59,
           "total_triceps_rms": 42.52,
           "triceps_biceps_ratio": 2.91,
@@ -7329,6 +7368,7 @@
           "display_name": "Tapas",
           "load_id": "5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/5kg/tapas.mp4",
           "total_biceps_rms": 15.88,
           "total_triceps_rms": 48.03,
           "triceps_biceps_ratio": 3.02,
@@ -7510,6 +7550,7 @@
           "display_name": "Tapas",
           "load_id": "7.5kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/7.5kg/tapas.mp4",
           "total_biceps_rms": 15.45,
           "total_triceps_rms": 54.04,
           "triceps_biceps_ratio": 3.5,
@@ -7691,6 +7732,7 @@
           "display_name": "Tapas",
           "load_id": "10kg",
           "file_name": "trial1.xlsx",
+          "simulation_video": "/simulations/10kg/tapas.mp4",
           "total_biceps_rms": 16.78,
           "total_triceps_rms": 60.04,
           "triceps_biceps_ratio": 3.58,
@@ -7882,7 +7924,8 @@
       "triceps_mean_mdf": 96.47,
       "biceps_fatigue_drop": 1.5,
       "triceps_fatigue_drop": -2.2,
-      "triceps_biceps_ratio": 3.85
+      "triceps_biceps_ratio": 3.85,
+      "simulation_video": "/simulations/2.5kg/balk.mp4"
     },
     {
       "load": "2.5kg",
@@ -7895,7 +7938,8 @@
       "triceps_mean_mdf": 78.03,
       "biceps_fatigue_drop": -41.0,
       "triceps_fatigue_drop": 2.2,
-      "triceps_biceps_ratio": 1.74
+      "triceps_biceps_ratio": 1.74,
+      "simulation_video": "/simulations/2.5kg/gau.mp4"
     },
     {
       "load": "2.5kg",
@@ -7908,7 +7952,8 @@
       "triceps_mean_mdf": 96.81,
       "biceps_fatigue_drop": -11.6,
       "triceps_fatigue_drop": -18.0,
-      "triceps_biceps_ratio": 4.45
+      "triceps_biceps_ratio": 4.45,
+      "simulation_video": "/simulations/2.5kg/mil.mp4"
     },
     {
       "load": "2.5kg",
@@ -7921,7 +7966,8 @@
       "triceps_mean_mdf": 95.85,
       "biceps_fatigue_drop": -13.5,
       "triceps_fatigue_drop": 5.8,
-      "triceps_biceps_ratio": 3.92
+      "triceps_biceps_ratio": 3.92,
+      "simulation_video": "/simulations/2.5kg/muk.mp4"
     },
     {
       "load": "2.5kg",
@@ -7934,7 +7980,8 @@
       "triceps_mean_mdf": 110.71,
       "biceps_fatigue_drop": -6.1,
       "triceps_fatigue_drop": -14.0,
-      "triceps_biceps_ratio": 2.88
+      "triceps_biceps_ratio": 2.88,
+      "simulation_video": "/simulations/2.5kg/ritesh.mp4"
     },
     {
       "load": "2.5kg",
@@ -7947,7 +7994,8 @@
       "triceps_mean_mdf": 96.38,
       "biceps_fatigue_drop": -7.7,
       "triceps_fatigue_drop": -6.7,
-      "triceps_biceps_ratio": 2.91
+      "triceps_biceps_ratio": 2.91,
+      "simulation_video": "/simulations/2.5kg/tapas.mp4"
     },
     {
       "load": "5kg",
@@ -7960,7 +8008,8 @@
       "triceps_mean_mdf": 86.01,
       "biceps_fatigue_drop": 10.5,
       "triceps_fatigue_drop": 42.8,
-      "triceps_biceps_ratio": 1.1
+      "triceps_biceps_ratio": 1.1,
+      "simulation_video": "/simulations/5kg/balk.mp4"
     },
     {
       "load": "5kg",
@@ -7973,7 +8022,8 @@
       "triceps_mean_mdf": 87.42,
       "biceps_fatigue_drop": -8.0,
       "triceps_fatigue_drop": -4.9,
-      "triceps_biceps_ratio": 2.76
+      "triceps_biceps_ratio": 2.76,
+      "simulation_video": "/simulations/5kg/gau.mp4"
     },
     {
       "load": "5kg",
@@ -7986,7 +8036,8 @@
       "triceps_mean_mdf": 115.31,
       "biceps_fatigue_drop": 2.2,
       "triceps_fatigue_drop": -15.8,
-      "triceps_biceps_ratio": 1.59
+      "triceps_biceps_ratio": 1.59,
+      "simulation_video": "/simulations/5kg/priy.mp4"
     },
     {
       "load": "5kg",
@@ -7999,7 +8050,8 @@
       "triceps_mean_mdf": 105.57,
       "biceps_fatigue_drop": -9.9,
       "triceps_fatigue_drop": -11.3,
-      "triceps_biceps_ratio": 2.87
+      "triceps_biceps_ratio": 2.87,
+      "simulation_video": "/simulations/5kg/ritesh.mp4"
     },
     {
       "load": "5kg",
@@ -8012,7 +8064,8 @@
       "triceps_mean_mdf": 94.88,
       "biceps_fatigue_drop": -9.2,
       "triceps_fatigue_drop": -3.1,
-      "triceps_biceps_ratio": 3.02
+      "triceps_biceps_ratio": 3.02,
+      "simulation_video": "/simulations/5kg/tapas.mp4"
     },
     {
       "load": "7.5kg",
@@ -8025,7 +8078,8 @@
       "triceps_mean_mdf": 91.77,
       "biceps_fatigue_drop": -10.0,
       "triceps_fatigue_drop": 1.9,
-      "triceps_biceps_ratio": 4.42
+      "triceps_biceps_ratio": 4.42,
+      "simulation_video": "/simulations/7.5kg/gau.mp4"
     },
     {
       "load": "7.5kg",
@@ -8038,7 +8092,8 @@
       "triceps_mean_mdf": 85.47,
       "biceps_fatigue_drop": 29.2,
       "triceps_fatigue_drop": -17.2,
-      "triceps_biceps_ratio": 2.65
+      "triceps_biceps_ratio": 2.65,
+      "simulation_video": "/simulations/7.5kg/mil.mp4"
     },
     {
       "load": "7.5kg",
@@ -8051,7 +8106,8 @@
       "triceps_mean_mdf": 103.03,
       "biceps_fatigue_drop": -8.8,
       "triceps_fatigue_drop": -16.8,
-      "triceps_biceps_ratio": 3.4
+      "triceps_biceps_ratio": 3.4,
+      "simulation_video": "/simulations/7.5kg/ritesh.mp4"
     },
     {
       "load": "7.5kg",
@@ -8064,7 +8120,8 @@
       "triceps_mean_mdf": 49.18,
       "biceps_fatigue_drop": -100.0,
       "triceps_fatigue_drop": -100.0,
-      "triceps_biceps_ratio": 5.85
+      "triceps_biceps_ratio": 5.85,
+      "simulation_video": "/simulations/7.5kg/swr.mp4"
     },
     {
       "load": "7.5kg",
@@ -8077,7 +8134,8 @@
       "triceps_mean_mdf": 90.91,
       "biceps_fatigue_drop": -10.3,
       "triceps_fatigue_drop": -14.0,
-      "triceps_biceps_ratio": 3.5
+      "triceps_biceps_ratio": 3.5,
+      "simulation_video": "/simulations/7.5kg/tapas.mp4"
     },
     {
       "load": "10kg",
@@ -8090,7 +8148,8 @@
       "triceps_mean_mdf": 72.41,
       "biceps_fatigue_drop": 29.5,
       "triceps_fatigue_drop": -7.9,
-      "triceps_biceps_ratio": 2.8
+      "triceps_biceps_ratio": 2.8,
+      "simulation_video": "/simulations/10kg/gau.mp4"
     },
     {
       "load": "10kg",
@@ -8103,7 +8162,8 @@
       "triceps_mean_mdf": 78.67,
       "biceps_fatigue_drop": 40.2,
       "triceps_fatigue_drop": -1.6,
-      "triceps_biceps_ratio": 2.34
+      "triceps_biceps_ratio": 2.34,
+      "simulation_video": "/simulations/10kg/mil.mp4"
     },
     {
       "load": "10kg",
@@ -8116,7 +8176,8 @@
       "triceps_mean_mdf": 99.05,
       "biceps_fatigue_drop": -13.2,
       "triceps_fatigue_drop": -13.8,
-      "triceps_biceps_ratio": 3.41
+      "triceps_biceps_ratio": 3.41,
+      "simulation_video": "/simulations/10kg/ritesh.mp4"
     },
     {
       "load": "10kg",
@@ -8129,7 +8190,8 @@
       "triceps_mean_mdf": 76.12,
       "biceps_fatigue_drop": -100.0,
       "triceps_fatigue_drop": -100.0,
-      "triceps_biceps_ratio": 3.28
+      "triceps_biceps_ratio": 3.28,
+      "simulation_video": "/simulations/10kg/swr.mp4"
     },
     {
       "load": "10kg",
@@ -8142,7 +8204,8 @@
       "triceps_mean_mdf": 87.73,
       "biceps_fatigue_drop": -10.4,
       "triceps_fatigue_drop": -22.9,
-      "triceps_biceps_ratio": 3.58
+      "triceps_biceps_ratio": 3.58,
+      "simulation_video": "/simulations/10kg/tapas.mp4"
     }
   ],
   "load_scaling_summary": {

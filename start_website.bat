@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 title MTP Push Task EMG Analysis Portal
 echo =================================================================
 echo           Starting MTP Push Task EMG Analysis Portal

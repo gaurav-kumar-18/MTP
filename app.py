@@ -12,12 +12,17 @@ import threading
 from flask import Flask, request, jsonify, send_from_directory, send_file
 from werkzeug.utils import secure_filename
 
-# Import extraction logic
+# Import extraction & simulation logic
 import extract_mtp_data
+try:
+    import generate_simulations
+except Exception:
+    generate_simulations = None
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 WEB_DIR = os.path.join(BASE_DIR, "web")
 PLOTS_DIR = os.path.join(BASE_DIR, "plots")
+SIMULATIONS_DIR = os.path.join(WEB_DIR, "simulations")
 DATA_FILE = os.path.join(WEB_DIR, "data", "mtp_data.json")
 
 app = Flask(__name__, static_folder=WEB_DIR, static_url_path="")
@@ -52,6 +57,10 @@ def serve_data(filename):
 @app.route("/plots/<path:filename>")
 def serve_plots(filename):
     return send_from_directory(PLOTS_DIR, filename)
+
+@app.route("/simulations/<path:filename>")
+def serve_simulations(filename):
+    return send_from_directory(SIMULATIONS_DIR, filename, conditional=True)
 
 # ─────────────────────────────────────────────────────────────
 # API ROUTES
@@ -110,9 +119,18 @@ def upload_trial():
     file.save(target_path)
     print(f"[UPLOAD] Saved new trial to {target_path}")
 
-    # Re-run extraction pipeline to update mtp_data.json
+    # Re-run extraction pipeline to update mtp_data.json & generate 3D simulation
     try:
         extract_mtp_data.extract_all()
+        if generate_simulations is not None:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            load_obj = data.get("loads", {}).get(load_id, {})
+            subj_data = load_obj.get("subjects", {}).get(subject_id)
+            if subj_data:
+                generate_simulations.generate_single(
+                    load_id, subject_id, subj_data, load_obj.get("mass_kg", 2.5)
+                )
         return jsonify({
             "status": "success",
             "message": f"Trial uploaded and processed for {subject_id} at {load_id}",

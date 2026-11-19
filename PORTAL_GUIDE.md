@@ -20,11 +20,16 @@ This automatically launches the local server and opens your browser at **[http:/
 ## 🔬 Core Features & Interface Structure
 
 ### 1. Dashboard Overview
-- **Metric Cards**: Quick view of total load conditions (4), unique participants (6), and trials processed (13 trials, 4.68 million samples).
+- **Metric Cards**: Quick view of total load conditions (4), unique participants (8), and trials processed (21 trials, 7.56 million samples).
 - **Global Scaling Charts**: 
   - **RMS Muscular Activity vs External Load (2.5kg to 10kg)** showing agonist (Triceps) vs antagonist/stabilizer (Biceps) recruitment.
   - **Median Frequency (MDF) Fatigue Scaling** showing spectral shifts across loads.
 - **Load Cards**: Instant overview of active subjects, mean RMS, and single-click access to load conditions.
+
+### 2. 3D Push Fatigue Simulations (`3D Simulations` tab)
+- **Per-Load & Per-Subject 3D Videos**: Edited 3D biomechanical push-fatigue simulations for all 4 load cells (`2.5kg`, `5kg`, `7.5kg`, `10kg`) and all 8 subjects (21 trial videos).
+- **Embedded Live Telemetry**: Each video renders real-time interpolated Biceps/Triceps RMS, MDF (Hz), fatigue percentage bars, dead-weight load labels, and animated RMS & MDF simulation curves.
+- **Synchronized Interactive Charts**: Client-side Chart.js RMS and MDF graphs track the exact video playhead in real time, alongside an **All Subject Simulations Gallery** and direct **MP4 Download**.
 
 ### 2. Loads & Muscles Explorer (`Loads & Muscles` tab)
 - **Interactive Multi-Level Filtering**:

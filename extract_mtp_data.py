@@ -296,6 +296,7 @@ def extract_all():
                 "display_name": SUBJECT_FULLNAMES.get(subj, subj.capitalize()),
                 "load_id": load_id,
                 "file_name": tf,
+                "simulation_video": f"/simulations/{load_id}/{subj}.mp4",
                 "total_biceps_rms": round(b_tot_rms, 2),
                 "total_triceps_rms": round(t_tot_rms, 2),
                 "triceps_biceps_ratio": round(ratio_tb, 2),
@@ -344,7 +345,8 @@ def extract_all():
                 "triceps_mean_mdf": round(float(np.mean(t_mdf_w)), 2),
                 "biceps_fatigue_drop": round(b_mdf_drop_pct, 1),
                 "triceps_fatigue_drop": round(t_mdf_drop_pct, 1),
-                "triceps_biceps_ratio": round(ratio_tb, 2)
+                "triceps_biceps_ratio": round(ratio_tb, 2),
+                "simulation_video": f"/simulations/{load_id}/{subj}.mp4"
             })
 
         if load_b_rms_totals:
@@ -396,11 +398,25 @@ def extract_all():
                 "triceps_rms_slope_per_kg": round(t_rms_scaling, 2)
             }
 
-    # Save to output file
-    os.makedirs(os.path.join(BASE_MTP_DIR, "web", "data"), exist_ok=True)
+    # Save to output files (web, public, docs, api)
     out_json = os.path.join(BASE_MTP_DIR, "web", "data", "mtp_data.json")
-    with open(out_json, "w", encoding="utf-8") as f:
-        json.dump(all_data, f, indent=2)
+    embedded_js_content = "window.EMBEDDED_MTP_DATA = " + json.dumps(all_data, separators=(",", ":")) + ";"
+
+    for data_dir in [
+        os.path.join(BASE_MTP_DIR, "web", "data"),
+        os.path.join(BASE_MTP_DIR, "public", "data"),
+        os.path.join(BASE_MTP_DIR, "docs", "data"),
+    ]:
+        os.makedirs(data_dir, exist_ok=True)
+        with open(os.path.join(data_dir, "mtp_data.json"), "w", encoding="utf-8") as f:
+            json.dump(all_data, f, indent=2)
+        with open(os.path.join(data_dir, "embedded_data.js"), "w", encoding="utf-8") as f:
+            f.write(embedded_js_content)
+
+    api_dir = os.path.join(BASE_MTP_DIR, "api")
+    if os.path.exists(api_dir):
+        with open(os.path.join(api_dir, "mtp_data.json"), "w", encoding="utf-8") as f:
+            json.dump(all_data, f, indent=2)
 
     print(f"\n[SUCCESS] Successfully saved extracted dataset to: {out_json}")
     print(f"Total Subjects: {len(all_data['subjects'])}")

@@ -16,6 +16,13 @@ let compareState = {
   subject: 'gau',
   load: '2.5kg'
 };
+let simState = {
+  load: '2.5kg',
+  subject: 'balk',
+  galleryFilter: 'selected',
+  speed: 1.0,
+  progressFrac: 0.0
+};
 
 // Chart instances
 let overviewRmsChart = null;
@@ -23,6 +30,9 @@ let overviewMdfChart = null;
 let explorerChart = null;
 let cmpChart1Instance = null;
 let cmpChart2Instance = null;
+let simRmsChart = null;
+let simMdfChart = null;
+let simRafId = null;
 
 // Distinct Subject Color Palette
 const SUBJECT_COLORS = {
@@ -59,16 +69,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderDashboard();
 });
 
+function resolveAssetUrl(path) {
+  if (!path) return path;
+  return path.startsWith('/') ? path.slice(1) : path;
+}
+
 // Load Dataset from API or static JSON
 async function loadDataset() {
   try {
-    const res = await fetch('/api/data');
+    const res = await fetch('api/data');
     if (!res.ok) throw new Error('API fetch error');
     mtpData = await res.json();
   } catch (err) {
-    console.warn('API route failed, trying static /data/mtp_data.json...', err);
+    console.warn('API route failed, trying static data/mtp_data.json...', err);
     try {
-      const resStatic = await fetch('/data/mtp_data.json');
+      const resStatic = await fetch('data/mtp_data.json');
       if (!resStatic.ok) throw new Error('Static fetch error');
       mtpData = await resStatic.json();
     } catch (e2) {
@@ -105,15 +120,17 @@ function updateHeaderStats() {
   const elLoads = document.getElementById('stat-total-loads');
   const elSubjects = document.getElementById('stat-total-subjects');
   const elTrials = document.getElementById('stat-total-trials');
+  const elSamples = document.getElementById('stat-total-samples');
 
   if (elLoads) elLoads.innerText = loadsCount;
   if (elSubjects) elSubjects.innerText = subjectsCount;
   if (elTrials) elTrials.innerText = trialsCount;
+  if (elSamples) elSamples.innerText = `${(trialsCount * 360000).toLocaleString()} raw samples processed`;
 }
 
 // Switch Top Navigation Views
 function switchView(viewId) {
-  const views = ['dashboard', 'load-explorer', 'comparison-studio', 'data-table', 'upload-modal'];
+  const views = ['dashboard', 'load-explorer', 'simulations', 'comparison-studio', 'data-table', 'upload-modal'];
   views.forEach(v => {
     const el = document.getElementById(`view-${v}`);
     if (el) {
@@ -134,6 +151,8 @@ function switchView(viewId) {
   } else if (viewId === 'load-explorer') {
     renderExplorerChart();
     renderPublicationPlots();
+  } else if (viewId === 'simulations') {
+    renderSimulationsView();
   } else if (viewId === 'comparison-studio') {
     renderCompareControls();
     renderCompareCharts();
@@ -147,7 +166,7 @@ function switchView(viewId) {
 }
 
 function updateNavState(activeId) {
-  const tabs = ['dashboard', 'load-explorer', 'comparison-studio', 'data-table', 'upload-modal'];
+  const tabs = ['dashboard', 'load-explorer', 'simulations', 'comparison-studio', 'data-table', 'upload-modal'];
   tabs.forEach(t => {
     const btn = document.getElementById(`nav-${t}`);
     if (!btn) return;
@@ -643,19 +662,19 @@ function renderPublicationPlots(filter = 'all') {
       type: 'bar',
       title: 'Muscular Activity (RMS) Bar Plot',
       desc: 'Biceps vs Triceps Total RMS comparison across all subjects',
-      url: `/plots/${currentLoad}/emg_rms_bar_plot.png`
+      url: `plots/${currentLoad}/emg_rms_bar_plot.png`
     },
     {
       type: 'time_rms',
       title: 'Time → RMS Windowed Plot',
       desc: '5-second windowed muscular recruitment over 180 seconds with variance bands',
-      url: `/plots/${currentLoad}/emg_time_rms.png`
+      url: `plots/${currentLoad}/emg_time_rms.png`
     },
     {
       type: 'time_mdf',
       title: 'Time → Median Frequency (MDF) Plot',
       desc: 'Frequency shift & localized muscular fatigue decay over 180 seconds',
-      url: `/plots/${currentLoad}/emg_time_mdf.png`
+      url: `plots/${currentLoad}/emg_time_mdf.png`
     }
   ];
 
@@ -675,7 +694,7 @@ function renderPublicationPlots(filter = 'all') {
         </button>
       </div>
       <div class="bg-slate-50 p-2 cursor-pointer group relative flex items-center justify-center flex-1 min-h-[220px]" onclick="openImageModal('${p.url}', '${p.title} - ${currentLoad.toUpperCase()}')">
-        <img src="${p.url}" alt="${p.title}" class="max-h-56 object-contain rounded border border-slate-200 group-hover:opacity-95 transition" onerror="this.src='/plots/2.5kg/emg_rms_bar_plot.png'">
+        <img src="${p.url}" alt="${p.title}" class="max-h-56 object-contain rounded border border-slate-200 group-hover:opacity-95 transition" onerror="this.src='plots/2.5kg/emg_rms_bar_plot.png'">
         <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition rounded flex items-center justify-center">
           <span class="px-2 py-1 rounded bg-white/90 text-xs font-bold text-blue-600 shadow">Click to Zoom</span>
         </div>
@@ -1129,7 +1148,10 @@ function renderDatasetTable() {
       <td class="py-3 px-3 font-mono font-semibold ${bDropClass}">${r.biceps_fatigue_drop > 0 ? '+' : ''}${r.biceps_fatigue_drop}%</td>
       <td class="py-3 px-3 font-mono font-semibold ${tDropClass}">${r.triceps_fatigue_drop > 0 ? '+' : ''}${r.triceps_fatigue_drop}%</td>
       <td class="py-3 px-3 font-mono font-bold text-indigo-700">${r.triceps_biceps_ratio.toFixed(2)}x</td>
-      <td class="py-3 px-3 text-right">
+      <td class="py-3 px-3 text-right whitespace-nowrap">
+        <button onclick="openSimulation('${r.load}', '${r.subject}')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition mr-1">
+          3D Sim
+        </button>
         <button onclick="drillDownRow('${r.load}', '${r.subject}')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
           Inspect
         </button>
@@ -1293,4 +1315,339 @@ async function handleTrialUpload(event) {
     btn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i><span>Process & Update Dashboard</span>`;
     if (window.lucide) lucide.createIcons();
   }
+}
+
+// ========================================================
+// 3D PUSH FATIGUE SIMULATION STUDIO
+// ========================================================
+const simPlayheadPlugin = {
+  id: 'simPlayhead',
+  afterDatasetsDraw(chart) {
+    if (!simState || simState.progressFrac == null) return;
+    const { ctx, chartArea, scales } = chart;
+    if (!chartArea || !scales.x) return;
+    const xPos = chartArea.left + simState.progressFrac * (chartArea.right - chartArea.left);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(xPos, chartArea.top);
+    ctx.lineTo(xPos, chartArea.bottom);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.75)';
+    ctx.setLineDash([4, 3]);
+    ctx.stroke();
+    ctx.restore();
+  }
+};
+
+function openSimulation(loadId, subjectId) {
+  simState.load = loadId;
+  simState.subject = subjectId;
+  switchView('simulations');
+}
+
+function selectSimLoad(loadId) {
+  simState.load = loadId;
+  const loadObj = mtpData?.loads?.[loadId];
+  const subjects = loadObj ? Object.keys(loadObj.subjects || {}) : [];
+  if (subjects.length > 0 && !subjects.includes(simState.subject)) {
+    simState.subject = subjects[0];
+  }
+  renderSimulationsView();
+}
+
+function selectSimSubject(subjectId) {
+  simState.subject = subjectId;
+  renderSimulationsView();
+}
+
+function setSimSpeed(speed) {
+  simState.speed = speed;
+  const video = document.getElementById('simVideoPlayer');
+  if (video) video.playbackRate = speed;
+  document.querySelectorAll('.sim-speed-btn').forEach(btn => {
+    const val = parseFloat(btn.getAttribute('data-speed'));
+    if (Math.abs(val - speed) < 0.01) {
+      btn.className = "sim-speed-btn px-2 py-1 rounded-lg border border-blue-500 bg-blue-50 text-blue-700 font-mono font-semibold";
+    } else {
+      btn.className = "sim-speed-btn px-2 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 font-mono";
+    }
+  });
+}
+
+function setSimGalleryFilter(mode) {
+  simState.galleryFilter = mode;
+  const selBtn = document.getElementById('btn-sim-gal-selected');
+  const allBtn = document.getElementById('btn-sim-gal-all');
+  if (selBtn && allBtn) {
+    if (mode === 'selected') {
+      selBtn.className = "sub-tab-active px-3 py-1 rounded-lg text-xs font-semibold transition";
+      allBtn.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
+    } else {
+      allBtn.className = "sub-tab-active px-3 py-1 rounded-lg text-xs font-semibold transition";
+      selBtn.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
+    }
+  }
+  renderSimGallery();
+}
+
+function renderSimulationsView() {
+  if (!mtpData) return;
+
+  // 1. Update Load buttons
+  document.querySelectorAll('.sim-load-btn').forEach(btn => {
+    if (btn.getAttribute('data-load') === simState.load) {
+      btn.className = "sim-load-btn tab-active px-3.5 py-2 rounded-xl text-xs font-semibold border border-transparent shadow-md transition";
+    } else {
+      btn.className = "sim-load-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition";
+    }
+  });
+
+  // 2. Render Subject buttons for active load
+  const loadObj = mtpData.loads[simState.load];
+  const subjects = loadObj ? Object.keys(loadObj.subjects || {}) : [];
+  if (subjects.length > 0 && !subjects.includes(simState.subject)) {
+    simState.subject = subjects[0];
+  }
+
+  const subjContainer = document.getElementById('sim-subject-buttons');
+  if (subjContainer) {
+    subjContainer.innerHTML = subjects.map(s => {
+      const sData = loadObj.subjects[s];
+      const active = s === simState.subject;
+      const color = SUBJECT_COLORS[s] || '#2563EB';
+      return `
+        <button onclick="selectSimSubject('${s}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition ${
+          active ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+        }">
+          <span class="w-2 h-2 rounded-full inline-block" style="background-color: ${color}"></span>
+          <span>${sData.display_name} (${s.toUpperCase()})</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  // 3. Load active simulation video & metadata
+  const sData = loadObj?.subjects?.[simState.subject];
+  if (sData) {
+    const videoUrl = resolveAssetUrl(sData.simulation_video || `simulations/${simState.load}/${simState.subject}.mp4`);
+    const titleEl = document.getElementById('simActiveTitle');
+    const subEl = document.getElementById('simActiveSubtitle');
+    const dlBtn = document.getElementById('simDownloadBtn');
+    const video = document.getElementById('simVideoPlayer');
+
+    if (titleEl) titleEl.innerText = `${sData.display_name} (${simState.subject.toUpperCase()}) — ${loadObj.name} 3D Simulation`;
+    if (subEl) subEl.innerText = `Triceps RMS: ${sData.total_triceps_rms} ADC | Biceps RMS: ${sData.total_biceps_rms} ADC | T/B Ratio: ${sData.triceps_biceps_ratio}x | MDF Drop: ${sData.triceps.mdf_drop_pct}%`;
+    if (dlBtn) {
+      dlBtn.href = videoUrl;
+      dlBtn.download = `push_fatigue_3d_${simState.load}_${simState.subject}.mp4`;
+    }
+
+    if (video && video.getAttribute('data-current-src') !== videoUrl) {
+      video.setAttribute('data-current-src', videoUrl);
+      video.src = videoUrl;
+      video.playbackRate = simState.speed;
+      video.play().catch(() => {});
+    }
+
+    renderSimCharts(sData);
+    startSimSyncLoop(sData);
+  }
+
+  renderSimGallery();
+  if (window.lucide) lucide.createIcons();
+}
+
+function interpolateSeries(series, frac) {
+  if (!series || series.length === 0) return 0;
+  const trialT = Math.max(0, Math.min(180, frac * 180));
+  const idxFloat = (trialT - 2.5) / 5.0;
+  if (idxFloat <= 0) return series[0];
+  if (idxFloat >= series.length - 1) return series[series.length - 1];
+  const i0 = Math.floor(idxFloat);
+  const i1 = i0 + 1;
+  const alpha = idxFloat - i0;
+  return series[i0] * (1 - alpha) + series[i1] * alpha;
+}
+
+function startSimSyncLoop(sData) {
+  if (simRafId) {
+    cancelAnimationFrame(simRafId);
+    simRafId = null;
+  }
+  const tick = () => {
+    if (currentView !== 'simulations') return;
+    const video = document.getElementById('simVideoPlayer');
+    if (video && video.duration && !isNaN(video.duration)) {
+      const frac = Math.max(0, Math.min(1, video.currentTime / video.duration));
+      simState.progressFrac = frac;
+
+      const trialT = frac * 180.0;
+      const clockEl = document.getElementById('simTrialClock');
+      if (clockEl) clockEl.innerText = `${trialT.toFixed(1)}s / 180.0s`;
+
+      const tRms = interpolateSeries(sData.triceps.rms_series, frac);
+      const bRms = interpolateSeries(sData.biceps.rms_series, frac);
+      const tMdf = interpolateSeries(sData.triceps.mdf_series, frac);
+      const bMdf = interpolateSeries(sData.biceps.mdf_series, frac);
+
+      const elTR = document.getElementById('simLiveTRms');
+      const elBR = document.getElementById('simLiveBRms');
+      const elTM = document.getElementById('simLiveTMdf');
+      const elBM = document.getElementById('simLiveBMdf');
+      if (elTR) elTR.innerText = `${tRms.toFixed(1)} ADC`;
+      if (elBR) elBR.innerText = `${bRms.toFixed(1)} ADC`;
+      if (elTM) elTM.innerText = `${tMdf.toFixed(1)} Hz`;
+      if (elBM) elBM.innerText = `${bMdf.toFixed(1)} Hz`;
+
+      if (simRmsChart) simRmsChart.draw();
+      if (simMdfChart) simMdfChart.draw();
+    }
+    simRafId = requestAnimationFrame(tick);
+  };
+  simRafId = requestAnimationFrame(tick);
+}
+
+function renderSimCharts(sData) {
+  const ctxRms = document.getElementById('simRmsChart');
+  const ctxMdf = document.getElementById('simMdfChart');
+  if (!ctxRms || !ctxMdf || !mtpData) return;
+
+  if (simRmsChart) simRmsChart.destroy();
+  if (simMdfChart) simMdfChart.destroy();
+
+  const timeLabels = (mtpData.metadata.time_axis || []).map(t => `${Math.round(t)}s`);
+
+  simRmsChart = new Chart(ctxRms, {
+    type: 'line',
+    data: {
+      labels: timeLabels,
+      datasets: [
+        {
+          label: 'Triceps RMS',
+          data: sData.triceps.rms_series,
+          borderColor: '#DC2626',
+          backgroundColor: 'rgba(220,38,38,0.08)',
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.25
+        },
+        {
+          label: 'Biceps RMS',
+          data: sData.biceps.rms_series,
+          borderColor: '#2563EB',
+          backgroundColor: 'rgba(37,99,235,0.08)',
+          fill: true,
+          borderWidth: 1.8,
+          pointRadius: 0,
+          tension: 0.25
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { font: { size: 9 } } },
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 7, font: { size: 9 } } }
+      }
+    },
+    plugins: [simPlayheadPlugin]
+  });
+
+  simMdfChart = new Chart(ctxMdf, {
+    type: 'line',
+    data: {
+      labels: timeLabels,
+      datasets: [
+        {
+          label: 'Triceps MDF (Hz)',
+          data: sData.triceps.mdf_series,
+          borderColor: '#EA580C',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.25
+        },
+        {
+          label: 'Biceps MDF (Hz)',
+          data: sData.biceps.mdf_series,
+          borderColor: '#0284C7',
+          borderWidth: 1.8,
+          pointRadius: 0,
+          tension: 0.25
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+      scales: {
+        y: { grid: { color: '#F1F5F9' }, ticks: { font: { size: 9 } } },
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 7, font: { size: 9 } } }
+      }
+    },
+    plugins: [simPlayheadPlugin]
+  });
+}
+
+function renderSimGallery() {
+  const grid = document.getElementById('simGalleryGrid');
+  if (!grid || !mtpData) return;
+
+  const items = [];
+  const loadOrder = simState.galleryFilter === 'all' ? ['2.5kg', '5kg', '7.5kg', '10kg'] : [simState.load];
+  loadOrder.forEach(lid => {
+    const lObj = mtpData.loads[lid];
+    if (!lObj) return;
+    Object.keys(lObj.subjects || {}).forEach(sid => {
+      items.push({ loadId: lid, loadName: lObj.name, subjId: sid, sData: lObj.subjects[sid] });
+    });
+  });
+
+  grid.innerHTML = items.map(item => {
+    const { loadId, loadName, subjId, sData } = item;
+    const isActive = loadId === simState.load && subjId === simState.subject;
+    const videoUrl = resolveAssetUrl(sData.simulation_video || `simulations/${loadId}/${subjId}.mp4`);
+    const color = SUBJECT_COLORS[subjId] || '#2563EB';
+    const tDrop = sData.triceps.mdf_drop_pct;
+    return `
+      <div class="rounded-xl border ${isActive ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200'} bg-white overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
+        <div class="relative bg-slate-950 aspect-video cursor-pointer group" onclick="openSimulation('${loadId}', '${subjId}')">
+          <video src="${videoUrl}#t=2.5" preload="metadata" muted loop playsinline
+                 onmouseover="this.play().catch(()=>{})" onmouseout="this.pause()"
+                 class="w-full h-full object-cover"></video>
+          <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-900/80 text-white border border-slate-700">${loadName}</span>
+          <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-600/90 text-white opacity-0 group-hover:opacity-100 transition">Load Simulation</span>
+        </div>
+        <div class="p-3 flex-1 flex flex-col justify-between space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${color}"></span>
+              <span class="text-xs font-bold text-slate-900">${sData.display_name} (${subjId.toUpperCase()})</span>
+            </div>
+            <span class="text-[11px] font-mono font-bold text-indigo-700">${sData.triceps_biceps_ratio.toFixed(2)}x</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1 text-[10px] text-slate-600 bg-slate-50 rounded-lg p-1.5 font-mono">
+            <div><span class="text-slate-400 block">T-RMS</span><strong class="text-red-600">${sData.total_triceps_rms.toFixed(1)}</strong></div>
+            <div><span class="text-slate-400 block">B-RMS</span><strong class="text-blue-600">${sData.total_biceps_rms.toFixed(1)}</strong></div>
+            <div><span class="text-slate-400 block">T-MDF</span><strong class="${tDrop < 0 ? 'text-red-600' : 'text-emerald-600'}">${tDrop > 0 ? '+' : ''}${tDrop}%</strong></div>
+          </div>
+          <div class="flex items-center gap-2 pt-0.5">
+            <button onclick="openSimulation('${loadId}', '${subjId}')" class="flex-1 py-1.5 rounded-lg text-[11px] font-semibold bg-slate-900 text-white hover:bg-blue-600 transition">
+              Watch &amp; Sync
+            </button>
+            <a href="${videoUrl}" download="push_fatigue_3d_${loadId}_${subjId}.mp4" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 transition" title="Download MP4">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (window.lucide) lucide.createIcons();
 }
